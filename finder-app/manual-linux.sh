@@ -39,10 +39,13 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
     #kernel build steps
     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} mrproper
     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} defconfig
-    make -j4 ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
+    make -j10 ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} all
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
 fi
 
 echo "Adding the Image in outdir"
+cp -r ${OUTDIR}/linux-stable/arch/arm64/boot/. ${OUTDIR}
 
 echo "Creating the staging directory for the root filesystem"
 cd "$OUTDIR"
@@ -92,7 +95,9 @@ cp ${CROSS_COMPILE_DIR}/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/ro
 
 # Make device nodes
 sudo mknod -m 666 dev/null c 1 3
-sudo mknod -m 600 dev/console c 5 1
+sudo mknod -m 666 dev/console c 5 1
+sudo mknod -m 666 dev/tty c 5 0
+
 
 # Clean and build the writer utility
 cd ${WRITER_DIR}
@@ -101,14 +106,19 @@ make CROSS_COMPILE=${CROSS_COMPILE}
 
 # Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cp -r ${WRITER_DIR} ${OUTDIR}/rootfs/home
+cp -r ${WRITER_DIR}/. ${OUTDIR}/rootfs/home/
+rm ${OUTDIR}/rootfs/home/conf
+cp -r ${WRITER_DIR}/../conf/. ${OUTDIR}/rootfs/home/conf
 
 # Chown the root directory
 cd ${OUTDIR}/rootfs
 sudo chown -R root:root *
+sudo chown root:tty dev/{console,tty}
 
 # Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 cd ..
 gzip -f initramfs.cpio
+mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz initramfs
+
 
