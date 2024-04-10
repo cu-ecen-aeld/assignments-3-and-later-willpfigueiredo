@@ -13,7 +13,7 @@ FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
 CROSS_COMPILE_DIR=/home/william/Linux_programming_buildroot/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu
-WRITER_DIR=/home/william/Linux_programming_buildroot/assignment-1-willpfigueiredo/finder-app
+ASSIGNMENT_DIR=${PWD}/..
 
 if [ $# -lt 1 ]
 then
@@ -88,10 +88,10 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # Add library dependencies to rootfs
-cp ${CROSS_COMPILE_DIR}/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
-cp ${CROSS_COMPILE_DIR}/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
-cp ${CROSS_COMPILE_DIR}/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64
-cp ${CROSS_COMPILE_DIR}/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
+cp ${ASSIGNMENT_DIR}/libs/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
+cp ${ASSIGNMENT_DIR}/libs/libm.so.6 ${OUTDIR}/rootfs/lib64
+cp ${ASSIGNMENT_DIR}/libs/libresolv.so.2 ${OUTDIR}/rootfs/lib64
+cp ${ASSIGNMENT_DIR}/libs/libc.so.6 ${OUTDIR}/rootfs/lib64
 
 # Make device nodes
 sudo mknod -m 666 dev/null c 1 3
@@ -100,15 +100,15 @@ sudo mknod -m 666 dev/tty c 5 0
 
 
 # Clean and build the writer utility
-cd ${WRITER_DIR}
+cd ${ASSIGNMENT_DIR}/finder-app
 make clean
 make CROSS_COMPILE=${CROSS_COMPILE}
 
 # Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cp -r ${WRITER_DIR}/. ${OUTDIR}/rootfs/home/
+cp -r ${ASSIGNMENT_DIR}/finder-app/. ${OUTDIR}/rootfs/home/
 rm ${OUTDIR}/rootfs/home/conf
-cp -r ${WRITER_DIR}/../conf/. ${OUTDIR}/rootfs/home/conf
+cp -r ${ASSIGNMENT_DIR}/conf/. ${OUTDIR}/rootfs/home/conf
 
 # Chown the root directory
 cd ${OUTDIR}/rootfs
