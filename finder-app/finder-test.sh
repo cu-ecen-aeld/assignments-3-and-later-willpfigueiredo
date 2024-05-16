@@ -48,13 +48,18 @@ then
 		exit 1
 	fi
 fi
-echo "Removing the old writer utility and compiling as a native application"
-#make clean
-#make
 
 for i in $( seq 1 $NUMFILES)
 do
-	./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+	which_ret=which writer
+	if [ $which_ret == 0 ]
+	then
+		echo "Using bin write"
+		writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+	else
+		./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+		echo "Using local fonder write"
+	fi
 done
 
 OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
