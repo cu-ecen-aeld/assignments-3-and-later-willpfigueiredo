@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Tester script for assignment 1 and assignment 2
 # Author: Siddhant Jajoo
 
@@ -58,15 +58,17 @@ do
 	
 	if [ $retcmd -eq 0 ]
 	then
-		echo "Using local folder write"
-		./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
-	else
-        echo "Using bin write"
 		writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+	else
+		./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 	fi
 done
-
-OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
+if [ $retcmd -eq 0 ]
+then
+	OUTPUTSTRING=$(finder.sh "$WRITEDIR" "$WRITESTR")
+else	
+	OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
+fi
 
 # remove temporary directories
 rm -rf /tmp/aeld-data
