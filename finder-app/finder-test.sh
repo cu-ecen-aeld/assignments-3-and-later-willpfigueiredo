@@ -10,6 +10,10 @@ WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
 username=$(cat /etc/finder-app/conf/username.txt)
 
+echo "Starting..."
+retcmd=$(which writer &> /dev/null; echo $?)
+echo "ret value $retcmd"
+
 if [ $# -lt 3 ]
 then
 	echo "Using default value ${WRITESTR} for string to write"
@@ -51,14 +55,14 @@ fi
 
 for i in $( seq 1 $NUMFILES)
 do
-	which_ret=which writer
-	if [ $which_ret == 0 ]
+	
+	if [ $retcmd -eq 0 ]
 	then
-		echo "Using bin write"
-		writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
-	else
+		echo "Using local folder write"
 		./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
-		echo "Using local fonder write"
+	else
+        echo "Using bin write"
+		writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 	fi
 done
 
