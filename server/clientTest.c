@@ -77,7 +77,7 @@ int main (int argc, char *argv[]){
             return 0;
             buffer[nrec] = '\0';
             printf("recv: %s", buffer);
-            usleep(10000);
+            usleep(500000);
             ioctl(socket_file_descriptor, FIONREAD, &count);
         }
     }
