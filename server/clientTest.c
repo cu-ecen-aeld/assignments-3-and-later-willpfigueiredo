@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 
 int socket_file_descriptor, connection, bind_status, connection_status;
@@ -74,16 +75,15 @@ int main (int argc, char *argv[]){
         int count = 1;
         while( count != 0){
             int nrec = recv(socket_file_descriptor, buffer, MESSAGE_LENGTH, 0);
-            return 0;
             buffer[nrec] = '\0';
             printf("recv: %s", buffer);
-            usleep(500000);
+            usleep(5000);
             ioctl(socket_file_descriptor, FIONREAD, &count);
         }
     }
     close(socket_file_descriptor);
     
 
-
+ return 0;
 }
 
