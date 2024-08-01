@@ -13,6 +13,8 @@
 #else
 #include <stddef.h> // size_t
 #include <stdint.h> // uintx_t
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #endif
 
